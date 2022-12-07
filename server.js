@@ -1,7 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const multer = require('multer')
+const multer = require('multer');
+const db = require('./app/models');
 const app = express();
 const port = 3006;
 
@@ -23,6 +24,11 @@ const upload = multer({ storage: storage })
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+
+db.sequelize.sync({ force: false, alter: true })
+require('./app/routes/cropnames.routes')(app);
+require('./app/routes/seedVarieties.routes')(app);
+require('./app/routes/sowingMethods.routes')(app);
 
 app.post('/uploadimg', upload.single('annotationimage'), (req, res) => {
     res.status(200).send({ message: 'Image uploaded successfully!' });
